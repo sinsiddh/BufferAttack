@@ -1,0 +1,351 @@
+ReadString:
+----------
+
+Dump of assembler code for function readString:
+   0x00000000004006fe <+0>:     push   %rbp
+   0x00000000004006ff <+1>:     mov    %rsp,%rbp
+   
+   Push the 3 register values onto the stack which is used do calculation in readString. Content of these registers are restored at the end of readString function. 
+
+   0x0000000000400702 <+4>:     push   %r13
+   0x0000000000400704 <+6>:     push   %r12
+   0x0000000000400706 <+8>:     push   %rbx
+
+    Sub 24 Byte i.e 16B for stack alignment
+   0x0000000000400707 <+9>:     sub    $0x18,%rsp
+
+   Address of Name[36] is in rdi. r13 = Name[] address 60dc0
+   0x000000000040070b <+13>:    mov    %rdi,%r13
+
+   Store "checkName" in top of the stack
+   0x000000000040070e <+16>:    mov    %rdx,-0x28(%rbp)
+
+   Array to hold 36 chars
+   0x0000000000400712 <+20>:    lea    0x24(%rsi),%eax <<< -- 36
+   0x0000000000400715 <+23>:    cltq    <<-- sign extend eax to 64 bits
+
+   
+   0x0000000000400717 <+25>:    add    $0x1e,%rax <<< -- 1e == 30
+   0x000000000040071b <+29>:    and    $0xfffffffffffffff0,%rax << -- Last 4 bits 0
+   0x000000000040071f <+33>:    sub    %rax,%rsp
+   0x0000000000400722 <+36>:    lea    0xf(%rsp),%r12
+   0x0000000000400727 <+41>:    and    $0xfffffffffffffff0,%r12
+
+   Initialise BUF[i] =0
+   0x000000000040072b <+45>:    mov    $0x0,%ebx
+
+
+   Start of for (;;) {
+
+   fgettc(stdin) and store char in eax
+   0x0000000000400730 <+50>:    mov    0x200669(%rip),%rdi        # 0x600da0 <stdin@@GLIBC_2.2.5>
+   0x0000000000400737 <+57>:    callq  0x4005e0 <fgetc@plt>
+
+   Check if c is EOF i.e ALL bits are 1. If newline move to instruction 84.
+   0x000000000040073c <+62>:    cmp    $0xffffffffffffffff,%eax
+   0x000000000040073f <+65>:    je     0x400752 <readString+84> << -- exit
+
+   check if char C is "\n-- HEX 10". If newline move to instruction 84  
+   0x0000000000400741 <+67>:    cmp    $0xa,%eax
+   0x0000000000400744 <+70>:    je     0x400752 <readString+84>
+
+
+   buf[i++] =c   
+   0x0000000000400746 <+72>:    movslq %ebx,%rdx
+   0x0000000000400749 <+75>:    mov    %al,(%r12,%rdx,1)
+   0x000000000040074d <+79>:    add    $0x1,%ebx
+
+
+   0x0000000000400750 <+82>:    jmp    0x400730 <readString+50>
+
+   }   end of for (;;)
+
+
+   /// NOT CLEAR
+   0x0000000000400752 <+84>:    movslq %ebx,%rbx
+   0x0000000000400755 <+87>:    movb   $0x0,(%r12,%rbx,1)
+   0x000000000040075a <+92>:    mov    %r13,%rax
+   0x000000000040075d <+95>:    lea    0x24(%r12),%rcx
+
+
+   for i <- 0 to BUFSIZE { 
+  
+   0x0000000000400762 <+100>:   movzbl (%r12),%edx
+   0x0000000000400767 <+105>:   mov    %dl,(%rax)
+   0x0000000000400769 <+107>:   add    $0x1,%r12
+   0x000000000040076d <+111>:   add    $0x1,%rax
+   0x0000000000400771 <+115>:   cmp    %rcx,%r12
+   0x0000000000400774 <+118>:   jne    0x400762 <readString+100>
+
+   }
+
+ 
+   call F(S) {
+   0x0000000000400776 <+120>:   mov    %r13,%rdi
+   0x0000000000400779 <+123>:   mov    $0x0,%eax
+   0x000000000040077e <+128>:   callq  *-0x28(%rbp) <<< --- (BP - 40)
+
+   }
+
+
+   POP all values from stack which were stored at the beg of this function and leave
+   0x0000000000400781 <+131>:   lea    -0x18(%rbp),%rsp
+   0x0000000000400785 <+135>:   pop    %rbx
+   0x0000000000400786 <+136>:   pop    %r12
+   0x0000000000400788 <+138>:   pop    %r13
+   0x000000000040078a <+140>:   leaveq 
+   0x000000000040078b <+141>:   retq   
+
+
+
+
+
+
+Main():
+------
+
+
+   0x000000000040078c <+0>:     push   %rbp
+   0x000000000040078d <+1>:     push   %rbx
+   0x000000000040078e <+2>:     sub    $0x8,%rsp
+   0x0000000000400792 <+6>:     mov    %edi,%ebx
+   0x0000000000400794 <+8>:     mov    %rsi,%rbp
+
+1. Call getpid() function
+
+   0x0000000000400797 <+11>:    callq  0x4005d0 <getpid@plt>
+   0x000000000040079c <+16>:    mov    %eax,%edi
+
+2. Call srand() function
+
+   0x000000000040079e <+18>:    callq  0x4005f0 <srand@plt>
+
+3.    if (argc > 1 && argv[1][0] == 'r')                                  |
+	     r = rand() % 32;
+
+   0x00000000004007a3 <+23>:    cmp    $0x1,%ebx
+   0x00000000004007a6 <+26>:    jle    0x4007c8 <main+60>
+   0x00000000004007a8 <+28>:    mov    0x8(%rbp),%rax
+   0x00000000004007ac <+32>:    cmpb   $0x72,(%rax)
+   0x00000000004007af <+35>:    jne    0x4007c8 <main+60>
+   0x00000000004007b1 <+37>:    callq  0x400600 <rand@plt>
+
+4. mprotect((void*)((unsigned int)Name & 0xfffff000), 1,PROT_READ | PROT_WRITE | PROT_EXEC); 
+   0x00000000004007b6 <+42>:    mov    %eax,%edx
+   0x00000000004007b8 <+44>:    sar    $0x1f,%edx
+   0x00000000004007bb <+47>:    shr    $0x1b,%edx
+   0x00000000004007be <+50>:    lea    (%rax,%rdx,1),%ebx
+   0x00000000004007c1 <+53>:    and    $0x1f,%ebx
+   0x00000000004007c4 <+56>:    sub    %edx,%ebx
+   0x00000000004007c6 <+58>:    jmp    0x4007cd <main+65>
+   0x00000000004007c8 <+60>:    mov    $0x0,%ebx
+   0x00000000004007cd <+65>:    lea    0x2005ed(%rip),%edi        # 0x600dc0 <Name>
+   0x00000000004007d3 <+71>:    and    $0xfffff000,%edi
+   0x00000000004007d9 <+77>:    mov    $0x7,%edx
+   0x00000000004007de <+82>:    mov    $0x1,%esi
+   0x00000000004007e3 <+87>:    callq  0x400580 <mprotect@plt>
+
+
+5. print What's your name ?
+   0x00000000004007e8 <+92>:    mov    $0x400998,%edi
+   0x00000000004007ed <+97>:    callq  0x4005a0 <puts@plt>
+
+6. Call readString(Name,r) 
+   0x00000000004007f2 <+102>:   mov    $0x400859,%edx
+   0x00000000004007f7 <+107>:   mov    %ebx,%esi
+   0x00000000004007f9 <+109>:   mov    $0x600dc0,%edi
+   0x00000000004007fe <+114>:   callq  0x4006fe <readString>
+
+7. strcmp(Name, "Andrew Appel") == 0
+   0x0000000000400803 <+119>:   mov    $0x600dc0,%esi
+   0x0000000000400808 <+124>:   mov    $0x4009ab,%edi
+   0x000000000040080d <+129>:   mov    $0xd,%ecx
+   0x0000000000400812 <+134>:   repz cmpsb %es:(%rdi),%ds:(%rsi)
+   0x0000000000400814 <+136>:   seta   %dl
+   0x0000000000400817 <+139>:   setb   %al
+   0x000000000040081a <+142>:   cmp    %al,%dl
+   0x000000000040081c <+144>:   jne    0x400825 <main+153>
+
+8. Set Grade to 'C'
+   0x000000000040081e <+146>:   movb   $0x43,0x20055f(%rip)        # 0x600d84 <grade>
+
+9. print  Thank you
+
+   0x0000000000400825 <+153>:   mov    $0x600dc0,%esi
+   0x000000000040082a <+158>:   mov    $0x4009b8,%edi
+   0x000000000040082f <+163>:   mov    $0x0,%eax
+   0x0000000000400834 <+168>:   callq  0x400590 <printf@plt>
+
+10. print recommended grade
+
+   0x0000000000400839 <+173>:   movsbl 0x200544(%rip),%esi        # 0x600d84 <grade>
+   0x0000000000400840 <+180>:   mov    $0x4009e8,%edi
+   0x0000000000400845 <+185>:   mov    $0x0,%eax
+   0x000000000040084a <+190>:   callq  0x400590 <printf@plt>
+   0x000000000040084f <+195>:   mov    $0x0,%edi
+   0x0000000000400854 <+200>:   callq  0x4005b0 <exit@plt>
+
+
+
+GDB analysys BSS Section:
+------------------------
+
+Size OF BSS section is 72 Bytes. Actually Only 36 Bytes is allocated to Name. But as shown in the below readelf output some standard library routines store data in BSS section.
+So the total BSS size is 72 Bytes
+
+eos$ size hello
+   text    data     bss     dec     hex filename
+   2381     552      72    3005     bbd hello <<< -- Size OF BSS section is 72 Bytes
+eos$ 
+
+
+Starting address of BSS is "600da0" and it's 32 bit aligned.
+
+  [25] .bss              NOBITS           0000000000600da0  00000d88
+       0000000000000048  0000000000000000  WA       0     0     32
+
+
+(gdb) print &Name[0]
+$2 = 0x600dc0 "" <<< -- Starting address of Name buffer
+(gdb) 
+$3 = 0x600dc0 ""
+(gdb) print &Name[35]
+$4 = 0x600de3 ""  << -- End address of Name
+(gdb) quit
+ = (char (*)[36]) 0x600dc0
+
+
+
+eos$ readelf -s hello | grep 25
+    11: 0000000000600da0     8 OBJECT  GLOBAL DEFAULT   25 stdin@GLIBC_2.2.5 (2)
+    25: 0000000000600da0     0 SECTION LOCAL  DEFAULT   25 
+    41: 0000000000600da8     1 OBJECT  LOCAL  DEFAULT   25 completed.6349
+    42: 0000000000600db0     8 OBJECT  LOCAL  DEFAULT   25 dtor_idx.6351
+    71: 0000000000600da0     8 OBJECT  GLOBAL DEFAULT   25 stdin@@GLIBC_2.2.5
+    77: 0000000000600dc0    36 OBJECT  GLOBAL DEFAULT   25 Name
+eos$ 
+
+
+
+-------------------------------------------------------------------------
+                Stack
+------------------------------------------------------------------------
+                 -
+                 -
+                 -
+
+
+                -
+                -
+-----------------------------------------------------------------------
+                Heap
+----------------------------------------------------------------------
+                BSS -- Total size 72 Bytes
+
+                &Name[0] - 0x600dc0
+                .
+                .
+
+                &Name[35] - 0x600de3
+
+----------------------------------------------------------------------
+                Initialised Data     - Total size 584 Bytes
+
+                &grade - 0x600d84 - 1 Byte long
+----------------------------------------------------------------------
+
+
+
+
+GDB analysys of Data section :
+----------------------------
+
+grade is sored in initialised data section. It's stored at 0x600d84 and it's value is F
+
+ print &grade
+$1 = 0x600d84 "F"
+(gdb) 
+$2 = 0x600d84 "F"
+(gdb) print grade
+$3 = 70 'F'
+
+Below output indicates only 1Byte allocated to grade
+
+eos$ readelf -s hello | grep 24
+    24: 0000000000600d80     0 SECTION LOCAL  DEFAULT   24 
+    54: 0000000000600d80     0 NOTYPE  WEAK   DEFAULT   24 data_start
+    69: 0000000000600d80     0 NOTYPE  GLOBAL DEFAULT   24 __data_start
+    80: 0000000000600d84     1 OBJECT  GLOBAL DEFAULT   24 grade <<< ---
+eos$ 
+
+
+eos$ size hello
+   text    data     bss     dec     hex filename
+   2381     552      72    3005     bbd hello
+eos$ 
+
+
+  [24] .data             PROGBITS         0000000000600d80  00000d80
+       0000000000000008  0000000000000000  WA       0     0     4
+
+
+
+-------------------------------------------------------------------------
+                Stack
+------------------------------------------------------------------------
+                 -
+                 -
+                 -
+
+
+                -
+                -
+-----------------------------------------------------------------------
+                Heap
+----------------------------------------------------------------------
+                BSS -- Total size 72 Bytes
+
+                &Name[0] - 0x600dc0
+                .
+                .
+
+                &Name[35] - 0x600de3
+
+----------------------------------------------------------------------
+                Initialised Data     - Total size 584 Bytes
+
+                &grade - 0x600d84 - 1 Byte long
+----------------------------------------------------------------------
+
+
+
+Stack frame Analysys -- Readstring:
+---------------------------------
+
+Stack pointer address - 0x7fffffffe060
+
+Buffer Address - 0x7fffffffe060
+
+CheckName - 0x400859
+
+s   - 0x600dc0
+
+
+
+(gdb) info frame
+Stack level 0, frame at 0x7fffffffe0e0:
+ rip = 0x400752 in readString (hello.c:51); saved rip 0x400803
+ called by frame at 0x7fffffffe100
+ source language c.
+ Arglist at 0x7fffffffe0d0, args: s=0x600dc0 "", r=<value optimized out>, f=0x400859 <checkName>
+ Locals at 0x7fffffffe0d0, Previous frame's sp is 0x7fffffffe0e0
+ Saved registers:
+  rbx at 0x7fffffffe0b8, rbp at 0x7fffffffe0d0, r12 at 0x7fffffffe0c0, r13 at 0x7fffffffe0c8, rip at 0x7fffffffe0d8
+(gdb) print $rsp
+$8 = (void *) 0x7fffffffe060
+(gdb) print buf
+$9 = 0x7fffffffe060 "Ma\377\377\377\177"
+(gdb) print &buf
+$10 = (char (*)[variable]) 0x7fffffffe060
+(gdb) 
+

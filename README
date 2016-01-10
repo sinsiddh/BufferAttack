@@ -1,0 +1,25 @@
+NOTE : Command to compile trigger
+gcc -g -v -o trigger trigger.c
+
+COMMANDS FOR VARIOUS SCENARIOS :-
+1) ./trigger e | ./helloe
+   RESULT : Segmentation Fault
+
+2) ./trigger d | ./hellod
+   RESULT : I recommend that you get a grade of D on this assignment.
+
+3) ./trigger c | ./helloc
+   RESULT : I recommend that you get a grade of C on this assignment.
+
+4) ./trigger b | ./hellob
+   RESULT : I recommend that you get a grade of B on this assignment.
+
+5) ./trigger a | ./helloa r
+   RESULT :  I recommend that you get a grade of A on this assignment.
+
+6) ./trigger s | ./hello3
+   RESULT :  I recommend that you get a grade of C on this assignment.
+
+6) ./trigger s | ./hello3 s
+   RESULT :  malicious buffer overflow detected, will exit!
+
